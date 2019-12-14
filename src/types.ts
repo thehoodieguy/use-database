@@ -1,2 +1,3 @@
-export type Table<RowType> = Record<string | number, RowType>;
-export type Database = Record<string, Table<any>>;
+export type TableKeyType = string | number;
+export type Table<RowType> = Record<TableKeyType, RowType>;
+export type Database = Record<string, Table<any>>; // eslint-disable-line @typescript-eslint/no-explicit-any

@@ -1,20 +1,20 @@
 import { Table } from './../src/types';
 import { act, RenderHookResult } from '@testing-library/react-hooks';
 
-import { UseDatabaseResult } from '../src/hooks/useDatabase';
+import { DatabaseHook } from '../src/hooks/useDatabase';
 
-export const createTableFromHook = (
-  hook: RenderHookResult<void, UseDatabaseResult>,
+export const createTableUtil = (
+  renderedHook: RenderHookResult<void, DatabaseHook>,
   tableName: string,
 ): void => {
-  const { createTable } = hook.result.current;
+  const { createTable } = renderedHook.result.current;
   act(() => {
     createTable(tableName);
   });
 };
 
-export const dropTableFromHook = (
-  hook: RenderHookResult<void, UseDatabaseResult>,
+export const dropTableUtil = (
+  hook: RenderHookResult<void, DatabaseHook>,
   tableName: string,
 ): void => {
   const { dropTable } = hook.result.current;
@@ -23,8 +23,8 @@ export const dropTableFromHook = (
   });
 };
 
-export const getTableFromHook = <RowType>(
-  hook: RenderHookResult<void, UseDatabaseResult>,
+export const getTableUtil = <RowType>(
+  hook: RenderHookResult<void, DatabaseHook>,
   tableName: string,
 ): Table<RowType> => {
   const { getTable } = hook.result.current;
