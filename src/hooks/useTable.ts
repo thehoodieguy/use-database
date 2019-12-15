@@ -1,4 +1,4 @@
-import { TableKeyType, Database, RowUpdateArg } from './../types';
+import { TableKeyType, RowUpdateArg } from './../types';
 import { TableExists } from './../exceptions';
 import { useDatabaseHook } from '../contexts/DatabaseHookContext';
 import { useEffect } from 'react';

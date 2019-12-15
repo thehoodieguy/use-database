@@ -1,4 +1,4 @@
-import DatabaseHookContext from '../../src/contexts/DatabaseHookContext';
+import DatabaseHookProvider from '../../src/contexts/DatabaseHookContext';
 import React, { ReactNode } from 'react';
 import { DatabaseHook } from '../../src/hooks/useDatabase';
 
@@ -7,7 +7,5 @@ export const makeWrapper = (databaseHook: DatabaseHook) => ({
 }: {
   children: ReactNode;
 }) => (
-  <DatabaseHookContext.Provider value={databaseHook}>
-    {children}
-  </DatabaseHookContext.Provider>
+  <DatabaseHookProvider value={databaseHook}>{children}</DatabaseHookProvider>
 );

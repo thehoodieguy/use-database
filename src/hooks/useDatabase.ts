@@ -57,11 +57,7 @@ function useDatabase(): DatabaseHook {
     });
   };
 
-  const getRow = <RowType>(
-    tableName: string,
-    id: TableKeyType,
-    check = true,
-  ): RowType => {
+  const getRow = <RowType>(tableName: string, id: TableKeyType): RowType => {
     checkTable(tableName);
     checkRow(tableName, id);
     return database[tableName][id];
