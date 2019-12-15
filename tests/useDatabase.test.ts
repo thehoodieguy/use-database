@@ -264,17 +264,21 @@ describe('set row list', () => {
   test('', () => {
     const rendered = renderHook(() => useDatabase());
     const { tableName, postList } = createTableWithRowsUtil(rendered);
-    const tableExpected = Object.fromEntries(postList.map(post => [post.id, post]));
+    const tableExpected = Object.fromEntries(
+      postList.map(post => [post.id, post]),
+    );
     expect(rendered.result.current.database).toEqual({
       [tableName]: tableExpected,
-    })
+    });
   });
 
   test('with exists', () => {
     const rendered = renderHook(() => useDatabase());
     const tableName = randomstring.generate();
     const postList = generatePostList(100);
-    const postListBefore = postList.slice(0, 50).map(post => generatePost({ id: post.id }));
+    const postListBefore = postList
+      .slice(0, 50)
+      .map(post => generatePost({ id: post.id }));
     act(() => rendered.result.current.createTable(tableName));
     act(() =>
       rendered.result.current.setRowList(
@@ -288,10 +292,12 @@ describe('set row list', () => {
         postList.map(post => ({ id: post.id, row: post })),
       ),
     );
-    const tableExpected = Object.fromEntries(postList.map(post => [post.id, post]));
+    const tableExpected = Object.fromEntries(
+      postList.map(post => [post.id, post]),
+    );
     expect(rendered.result.current.database).toEqual({
       [tableName]: tableExpected,
-    })
+    });
   });
 
   test('with all exists', () => {
@@ -311,10 +317,12 @@ describe('set row list', () => {
         postList.map(post => ({ id: post.id, row: post })),
       ),
     );
-    const tableExpected = Object.fromEntries(postList.map(post => [post.id, post]));
+    const tableExpected = Object.fromEntries(
+      postList.map(post => [post.id, post]),
+    );
     expect(rendered.result.current.database).toEqual({
       [tableName]: tableExpected,
-    })
+    });
   });
 });
 
@@ -322,7 +330,12 @@ describe('get row list', () => {
   test('', () => {
     const rendered = renderHook(() => useDatabase());
     const { tableName, postList } = createTableWithRowsUtil(rendered);
-    expect(rendered.result.current.getRowList(tableName, postList.map(post => post.id))).toEqual(postList);
+    expect(
+      rendered.result.current.getRowList(
+        tableName,
+        postList.map(post => post.id),
+      ),
+    ).toEqual(postList);
   });
 
   test('which do not exist', () => {
@@ -330,7 +343,12 @@ describe('get row list', () => {
     const tableName = randomstring.generate();
     act(() => rendered.result.current.createTable(tableName));
     const postList = generatePostList(100);
-    expect(rendered.result.current.getRowList(tableName, postList.map(post => post.id))).toEqual(postList.map(() => undefined));
+    expect(
+      rendered.result.current.getRowList(
+        tableName,
+        postList.map(post => post.id),
+      ),
+    ).toEqual(postList.map(() => undefined));
   });
 
   test('with check row', () => {
@@ -338,7 +356,13 @@ describe('get row list', () => {
     const tableName = randomstring.generate();
     act(() => rendered.result.current.createTable(tableName));
     const postList = generatePostList(100);
-    expect(() => rendered.result.current.getRowList(tableName, postList.map(post => post.id), true)).toThrowError(RowDoesNotExist);
+    expect(() =>
+      rendered.result.current.getRowList(
+        tableName,
+        postList.map(post => post.id),
+        true,
+      ),
+    ).toThrowError(RowDoesNotExist);
   });
 });
 
@@ -346,9 +370,14 @@ describe('delete row list', () => {
   test('', () => {
     const rendered = renderHook(() => useDatabase());
     const { tableName, postList } = createTableWithRowsUtil(rendered);
-    act(() => rendered.result.current.deleteRowList(tableName, postList.map(post => post.id)))
+    act(() =>
+      rendered.result.current.deleteRowList(
+        tableName,
+        postList.map(post => post.id),
+      ),
+    );
     expect(rendered.result.current.database).toEqual({
-      [tableName]: {}
+      [tableName]: {},
     });
   });
 
@@ -357,9 +386,14 @@ describe('delete row list', () => {
     const tableName = randomstring.generate();
     act(() => rendered.result.current.createTable(tableName));
     const postList = generatePostList(100);
-    act(() => rendered.result.current.deleteRowList(tableName, postList.map(post => post.id)));
+    act(() =>
+      rendered.result.current.deleteRowList(
+        tableName,
+        postList.map(post => post.id),
+      ),
+    );
     expect(rendered.result.current.database).toEqual({
-      [tableName]: {}
+      [tableName]: {},
     });
   });
 
@@ -368,7 +402,15 @@ describe('delete row list', () => {
     const tableName = randomstring.generate();
     act(() => rendered.result.current.createTable(tableName));
     const postList = generatePostList(100);
-    expect(() => act(() => rendered.result.current.deleteRowList(tableName, postList.map(post => post.id), true))).toThrowError(RowDoesNotExist);
+    expect(() =>
+      act(() =>
+        rendered.result.current.deleteRowList(
+          tableName,
+          postList.map(post => post.id),
+          true,
+        ),
+      ),
+    ).toThrowError(RowDoesNotExist);
   });
 });
 
@@ -377,15 +419,21 @@ describe('patch row list', () => {
     const rendered = renderHook(() => useDatabase());
     const rowNum = 100;
     const { tableName, postList } = createTableWithRowsUtil(rendered, rowNum);
-    const partialNewPostList = postList.slice(0, 50).map(post => generatePost({ id: post.id }));
-    const tableExpected = 
-    {
+    const partialNewPostList = postList
+      .slice(0, 50)
+      .map(post => generatePost({ id: post.id }));
+    const tableExpected = {
       ...Object.fromEntries(postList.map(post => [post.id, post])),
-      ...Object.fromEntries(partialNewPostList.map(post => [post.id, post]))
+      ...Object.fromEntries(partialNewPostList.map(post => [post.id, post])),
     };
-    act(() => rendered.result.current.patchRowList(tableName, partialNewPostList.map(post => ({ id: post.id, row: post }))));
+    act(() =>
+      rendered.result.current.patchRowList(
+        tableName,
+        partialNewPostList.map(post => ({ id: post.id, row: post })),
+      ),
+    );
     expect(rendered.result.current.database).toEqual({
       [tableName]: tableExpected,
-    })
+    });
   });
 });

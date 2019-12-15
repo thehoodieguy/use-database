@@ -1,16 +1,19 @@
-import { TableKeyType, Database } from './../types';
+import { TableKeyType, Database, RowUpdateArg } from './../types';
 import { TableExists } from './../exceptions';
 import { useDatabaseHook } from '../contexts/DatabaseHookContext';
 import { useEffect } from 'react';
 
 function useTable<RowType>(tableName: string): TableHook<RowType> {
   const {
-    database,
     createTable,
     getRow: getRowFromDb,
     deleteRow: deleteRowFromDb,
     setRow: setRowToDb,
     patchRow: patchRowToDb,
+    getRowList: getRowListFromDb,
+    deleteRowList: deleteRowListFromDb,
+    setRowList: setRowListToDb,
+    patchRowList: patchRowListToDb,
   } = useDatabaseHook();
 
   useEffect(() => {
@@ -21,34 +24,43 @@ function useTable<RowType>(tableName: string): TableHook<RowType> {
     }
   }, []);
 
-  const getRow = (id: TableKeyType): RowType => {
-    return getRowFromDb<RowType>(tableName, id);
-  };
-  const setRow = (id: TableKeyType, row: RowType): void => {
+  const getRow = (id: TableKeyType): RowType =>
+    getRowFromDb<RowType>(tableName, id);
+  const setRow = (id: TableKeyType, row: RowType) =>
     setRowToDb<RowType>(tableName, id, row);
-  };
-  const patchRow = (id: TableKeyType, partialRow: Partial<RowType>): void => {
+  const patchRow = (id: TableKeyType, partialRow: Partial<RowType>) =>
     patchRowToDb<RowType>(tableName, id, partialRow);
-  };
-  const deleteRow = (id: TableKeyType): void => {
-    deleteRowFromDb(tableName, id);
-  };
+  const deleteRow = (id: TableKeyType): void => deleteRowFromDb(tableName, id);
+  const getRowList = (idList: TableKeyType[]) =>
+    getRowListFromDb<RowType>(tableName, idList);
+  const deleteRowList = (idList: TableKeyType[]) =>
+    deleteRowListFromDb(tableName, idList);
+  const setRowList = (rowListToUpdate: RowUpdateArg<RowType>[]) =>
+    setRowListToDb(tableName, rowListToUpdate);
+  const patchRowList = (rowListToPatch: RowUpdateArg<RowType>[]) =>
+    patchRowListToDb(tableName, rowListToPatch);
 
   return {
-    database,
     getRow,
     setRow,
     patchRow,
     deleteRow,
+    getRowList,
+    deleteRowList,
+    setRowList,
+    patchRowList,
   };
 }
 
 export interface TableHook<RowType> {
-  database: Database;
   getRow: (id: TableKeyType) => RowType;
   setRow: (id: TableKeyType, row: RowType) => void;
   patchRow: (id: TableKeyType, partialRow: Partial<RowType>) => void;
   deleteRow: (id: TableKeyType) => void;
+  getRowList: (idList: TableKeyType[]) => RowType[];
+  deleteRowList: (idList: TableKeyType[]) => void;
+  setRowList: (rowListToUpdate: RowUpdateArg<RowType>[]) => void;
+  patchRowList: (rowListToPatch: RowUpdateArg<RowType>[]) => void;
 }
 
 export default useTable;

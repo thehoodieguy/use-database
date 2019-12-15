@@ -210,12 +210,12 @@ export interface DatabaseHook {
   ) => void;
   setRowList: <RowType>(
     tableName: string,
-    rowsToUpdate: RowUpdateArg<RowType>[],
+    rowListToUpdate: RowUpdateArg<RowType>[],
     checkRowList?: boolean,
   ) => void;
   patchRowList: <RowType>(
     tableName: string,
-    rowsToUpdate: RowPatchArg<RowType>[],
+    rowListToPatch: RowPatchArg<RowType>[],
     checkRowList?: boolean,
   ) => void;
 }
