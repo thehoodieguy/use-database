@@ -1,5 +1,5 @@
 import { renderHook } from '@testing-library/react-hooks';
-import { useDatabaseHook } from '../src/contexts/DatabaseHookContext';
+import { useDatabaseHook } from '../src/contexts';
 import useDatabase from '../src/hooks/useDatabase';
 import { makeWrapper } from './utils/context';
 import { DatabaseNotProvidedError } from '../src/exceptions';

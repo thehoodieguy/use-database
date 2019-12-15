@@ -1,11 +1,8 @@
 import { TableKeyType, RowUpdateArg } from './../types';
-import { TableExists } from './../exceptions';
 import { useDatabaseHook } from '../contexts';
-import { useEffect } from 'react';
 
 function useTable<RowType>(tableName: string): TableHook<RowType> {
   const {
-    createTable,
     getRow: getRowFromDb,
     deleteRow: deleteRowFromDb,
     setRow: setRowToDb,
@@ -15,14 +12,6 @@ function useTable<RowType>(tableName: string): TableHook<RowType> {
     setRowList: setRowListToDb,
     patchRowList: patchRowListToDb,
   } = useDatabaseHook();
-
-  useEffect(() => {
-    try {
-      createTable(tableName);
-    } catch (e) {
-      if (!(e instanceof TableExists)) throw e;
-    }
-  }, []);
 
   const getRow = (id: TableKeyType): RowType =>
     getRowFromDb<RowType>(tableName, id);

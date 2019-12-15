@@ -8,7 +8,6 @@ import {
 import useTable from '../src/hooks/useTable';
 import { Post, generatePost } from './utils/mock';
 import randomstring from 'randomstring';
-import { RowDoesNotExist } from '../src/exceptions';
 
 const build = (mountOnce = true) => {
   const renderedDb = renderHook(() => useDatabase());
@@ -30,26 +29,6 @@ const build = (mountOnce = true) => {
   };
 };
 
-describe('create table when mounted', () => {
-  test('', () => {
-    const { renderedDb, tableName } = build();
-    expect(renderedDb.result.current.database).toEqual({
-      [tableName]: {},
-    });
-  });
-
-  test('which exists', () => {
-    const renderedDatabase = renderHook(() => useDatabase());
-    const wrapper = makeWrapper(renderedDatabase.result.current);
-    const tableName = randomstring.generate();
-    act(() => renderedDatabase.result.current.createTable(tableName));
-    renderHook(() => useTable<Post>(tableName), { wrapper });
-    expect(renderedDatabase.result.current.database).toEqual({
-      [tableName]: {},
-    });
-  });
-});
-
 describe('get row', () => {
   test('', () => {
     const { renderedDb, renderTable, tableName } = build();
@@ -67,9 +46,7 @@ describe('get row', () => {
     const { renderedDb, renderTable } = build();
     const samplePost = generatePost();
     const renderedTable = renderTable(renderedDb);
-    expect(() =>
-      renderedTable.result.current.getRow(samplePost.id),
-    ).toThrowError(RowDoesNotExist);
+    expect(() => renderedTable.result.current.getRow(samplePost.id)).toThrow();
   });
 });
 
@@ -131,30 +108,28 @@ describe('patch row', () => {
       act(() => {
         renderedTable.result.current.patchRow(postBefore.id, postAfter);
       }),
-    ).toThrowError(RowDoesNotExist);
+    );
   });
 });
 
 describe('delete row', () => {
   test('', () => {
-    const { renderedDb, renderTable, tableName } = build();
+    const { renderedDb, renderTable } = build();
     const post = generatePost();
     let renderedTable = renderTable(renderedDb);
     act(() => renderedTable.result.current.setRow(post.id, post));
     renderedTable = renderTable(renderedDb);
     act(() => renderedTable.result.current.deleteRow(post.id));
     renderedTable = renderTable(renderedDb);
-    expect(() => renderedTable.result.current.getRow(post.id)).toThrowError(
-      RowDoesNotExist,
-    );
+    expect(renderedTable.result.current.getRow(post.id)).toBeFalsy();
   });
 
   test('does not exist', () => {
-    const { renderedDb, renderTable, tableName } = build();
+    const { renderedDb, renderTable } = build();
     const post = generatePost();
-    let renderedTable = renderTable(renderedDb);
+    const renderedTable = renderTable(renderedDb);
     expect(() =>
       act(() => renderedTable.result.current.deleteRow(post.id)),
-    ).toThrowError(RowDoesNotExist);
+    ).toThrow();
   });
 });

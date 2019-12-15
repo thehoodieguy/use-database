@@ -1,43 +1,15 @@
 import { useState } from 'react';
 
 import { Database, RowUpdateArg, RowPatchArg } from '../types';
-import { TableExists } from './../exceptions';
 import { Table, TableKeyType } from './../types';
-import {
-  checkTable as checkTableUtil,
-  checkRow as checkRowUtil,
-} from './utils';
 
 function useDatabase(): DatabaseHook {
   const [database, setDatabase] = useState<Database>({});
 
-  const createTable = (tableName: string): void => {
-    if (tableName in database) {
-      throw new TableExists(`Table ${tableName} already exists.`);
-    }
-    setDatabase({ ...database, [tableName]: {} });
-  };
-
-  const checkTable = (tableName: string) => {
-    checkTableUtil(database, tableName);
-  };
-
-  const checkRow = (tableName: string, id: TableKeyType) => {
-    checkRowUtil(database[tableName], id);
-  };
-
-  const getTable = <RowType>(
-    tableName: string,
-    check = true,
-  ): Table<RowType> => {
-    if (check) {
-      checkTable(tableName);
-    }
-    return database[tableName];
-  };
+  const getTable = <RowType>(tableName: string): Table<RowType> =>
+    database[tableName];
 
   const dropTable = (tableName: string): void => {
-    checkTable(tableName);
     const { [tableName]: omit, ...dropped } = database; // eslint-disable-line @typescript-eslint/no-unused-vars
     setDatabase(dropped);
   };
@@ -47,7 +19,6 @@ function useDatabase(): DatabaseHook {
     id: TableKeyType,
     data: RowType,
   ): void => {
-    checkTable(tableName);
     setDatabase({
       ...database,
       [tableName]: {
@@ -57,19 +28,14 @@ function useDatabase(): DatabaseHook {
     });
   };
 
-  const getRow = <RowType>(tableName: string, id: TableKeyType): RowType => {
-    checkTable(tableName);
-    checkRow(tableName, id);
-    return database[tableName][id];
-  };
+  const getRow = <RowType>(tableName: string, id: TableKeyType): RowType =>
+    database[tableName][id];
 
   const patchRow = <RowType>(
     tableName: string,
     id: TableKeyType,
     partialData: Partial<RowType>,
   ): void => {
-    checkTable(tableName);
-    checkRow(tableName, id);
     setDatabase({
       ...database,
       [tableName]: {
@@ -83,9 +49,7 @@ function useDatabase(): DatabaseHook {
   };
 
   const deleteRow = (tableName: string, id: TableKeyType): void => {
-    checkTable(tableName);
-    checkRow(tableName, id);
-    const { [id]: omit, ...newTable } = database[tableName];
+    const { [id]: omit, ...newTable } = database[tableName]; // eslint-disable-line @typescript-eslint/no-unused-vars
     setDatabase({
       ...database,
       [tableName]: newTable,
@@ -95,24 +59,9 @@ function useDatabase(): DatabaseHook {
   const getRowList = <RowType>(
     tableName: string,
     idList: TableKeyType[],
-    checkIdList = false,
-  ): RowType[] => {
-    checkTable(tableName);
-    if (checkIdList) {
-      idList.map(id => checkRow(tableName, id));
-    }
-    return idList.map(id => database[tableName][id]);
-  };
+  ): RowType[] => idList.map(id => database[tableName][id]);
 
-  const deleteRowList = (
-    tableName: string,
-    idList: TableKeyType[],
-    checkIdList = false,
-  ): void => {
-    checkTable(tableName);
-    if (checkIdList) {
-      idList.map(id => checkRow(tableName, id));
-    }
+  const deleteRowList = (tableName: string, idList: TableKeyType[]): void => {
     const strIdList = idList.map(id => id.toString());
     const newTable = Object.fromEntries(
       Object.entries(database[tableName]).filter(
@@ -130,7 +79,6 @@ function useDatabase(): DatabaseHook {
     tableName: string,
     rowListToUpdate: RowUpdateArg<RowType>[],
   ): void => {
-    checkTable(tableName);
     const newPartialTable = Object.fromEntries(
       rowListToUpdate.map(({ id, row }) => [id, row]),
     );
@@ -147,7 +95,6 @@ function useDatabase(): DatabaseHook {
     tableName: string,
     rowListToPatch: RowPatchArg<RowType>[],
   ): void => {
-    checkTable(tableName);
     const partialNewTable = Object.fromEntries(
       rowListToPatch.map(({ id, row }) => [
         id,
@@ -165,8 +112,6 @@ function useDatabase(): DatabaseHook {
 
   return {
     database,
-    checkTable,
-    createTable,
     getTable,
     dropTable,
     setRow,
@@ -182,8 +127,6 @@ function useDatabase(): DatabaseHook {
 
 export interface DatabaseHook {
   database: Database;
-  checkTable: (tableName: string) => void;
-  createTable: (tableName: string) => void;
   getTable: <RowType>(tableName: string) => Table<RowType>;
   dropTable: (tableName: string) => void;
   getRow: <RowType>(tableName: string, id: TableKeyType) => RowType;
@@ -194,25 +137,15 @@ export interface DatabaseHook {
     id: TableKeyType,
     partialData: Partial<RowType>,
   ) => void;
-  getRowList: <RowType>(
-    tableName: string,
-    idList: TableKeyType[],
-    checkIdList?: boolean,
-  ) => RowType[];
-  deleteRowList: (
-    tableName: string,
-    idList: TableKeyType[],
-    checkIdList?: boolean,
-  ) => void;
+  getRowList: <RowType>(tableName: string, idList: TableKeyType[]) => RowType[];
+  deleteRowList: (tableName: string, idList: TableKeyType[]) => void;
   setRowList: <RowType>(
     tableName: string,
     rowListToUpdate: RowUpdateArg<RowType>[],
-    checkRowList?: boolean,
   ) => void;
   patchRowList: <RowType>(
     tableName: string,
     rowListToPatch: RowPatchArg<RowType>[],
-    checkRowList?: boolean,
   ) => void;
 }
 

@@ -14,6 +14,5 @@ export const generatePost = (partialPost: Partial<Post> = {}): Post => ({
   ...partialPost,
 });
 
-export const generatePostList = (
-  postNum: number,
-): Post[] => [...Array(postNum).keys()].map((key) => generatePost({id: key}));
+export const generatePostList = (postNum: number): Post[] =>
+  [...Array(postNum).keys()].map(key => generatePost({ id: key }));
