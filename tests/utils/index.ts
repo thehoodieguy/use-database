@@ -1,7 +1,7 @@
-import { Table } from './../src/types';
+import { Table } from './../../src/types';
 import { act, RenderHookResult } from '@testing-library/react-hooks';
 
-import { DatabaseHook } from '../src/hooks/useDatabase';
+import { DatabaseHook } from '../../src/hooks/useDatabase';
 
 export const createTableUtil = (
   renderedHook: RenderHookResult<void, DatabaseHook>,

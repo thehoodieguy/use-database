@@ -1,8 +1,14 @@
 import { act, renderHook } from '@testing-library/react-hooks';
 
 import useDatabase from '../src/hooks/useDatabase';
-import { TableDoesNotExists, TableExists } from './../src/exceptions';
-import { createTableUtil, getTableUtil } from './utils';
+import {
+  TableDoesNotExists,
+  TableExists,
+  RowDoesNotExists,
+} from './../src/exceptions';
+import { createTableUtil, getTableUtil, dropTableUtil } from './utils';
+import { generatePost, Post } from './utils/mock';
+import randomstring, { generate } from 'randomstring';
 
 test('use database init', () => {
   const rendered = renderHook(() => useDatabase());
@@ -70,5 +76,143 @@ describe('get db', () => {
     expect(() => getTableUtil(rendered, tableName)).toThrowError(
       TableDoesNotExists,
     );
+  });
+});
+
+describe('drop table', () => {
+  test('drop table', () => {
+    const rendered = renderHook(() => useDatabase());
+    const tableName = 'hoodie';
+    createTableUtil(rendered, tableName);
+    dropTableUtil(rendered, tableName);
+    expect(rendered.result.current.database).toEqual({});
+  });
+
+  test('drop table does not exist', () => {
+    const rendered = renderHook(() => useDatabase());
+    const tableName = 'hoodie';
+    expect(() => dropTableUtil(rendered, tableName)).toThrowError(
+      TableDoesNotExists,
+    );
+  });
+});
+
+describe('set data', () => {
+  test('set data', () => {
+    const rendered = renderHook(() => useDatabase());
+    const tableName = 'hoodie';
+    createTableUtil(rendered, tableName);
+    const samplePost = generatePost();
+    act(() =>
+      rendered.result.current.setData(tableName, samplePost.id, samplePost),
+    );
+
+    expect(rendered.result.current.database).toEqual({
+      [tableName]: {
+        [samplePost.id]: samplePost,
+      },
+    });
+  });
+
+  test('set data already exists', () => {
+    const rendered = renderHook(() => useDatabase());
+    const tableName = 'hoodie';
+    createTableUtil(rendered, tableName);
+    const samplePost = generatePost();
+    act(() => {
+      rendered.result.current.setData(tableName, samplePost.id, samplePost);
+      rendered.result.current.setData(tableName, samplePost.id, samplePost);
+    });
+
+    expect(rendered.result.current.database).toEqual({
+      [tableName]: {
+        [samplePost.id]: samplePost,
+      },
+    });
+  });
+});
+
+describe('get data', () => {
+  test('get data', () => {
+    const rendered = renderHook(() => useDatabase());
+    const tableName = 'hoodie';
+    createTableUtil(rendered, tableName);
+    const samplePost = generatePost();
+    act(() => {
+      rendered.result.current.setData(tableName, samplePost.id, samplePost);
+    });
+    expect(rendered.result.current.getData(tableName, samplePost.id)).toEqual(
+      samplePost,
+    );
+  });
+
+  test('get data does not exist', () => {
+    const rendered = renderHook(() => useDatabase());
+    const tableName = 'hoodie';
+    createTableUtil(rendered, tableName);
+    const samplePost = generatePost();
+    expect(() =>
+      rendered.result.current.getData(tableName, samplePost.id),
+    ).toThrowError(RowDoesNotExists);
+  });
+
+  test('get data from table does not exist', () => {
+    const rendered = renderHook(() => useDatabase());
+    const samplePost = generatePost();
+    expect(() =>
+      rendered.result.current.getData('hoodie', samplePost.id),
+    ).toThrowError(TableDoesNotExists);
+  });
+});
+
+describe('patch data', () => {
+  test('patch data', () => {
+    const rendered = renderHook(() => useDatabase());
+    const samplePost = generatePost();
+    const partialPost: Partial<Post> = { body: randomstring.generate() };
+    const tableName = 'hoodie';
+    createTableUtil(rendered, tableName);
+    act(() => {
+      rendered.result.current.setData(tableName, samplePost.id, samplePost);
+    });
+    act(() => {
+      rendered.result.current.patchData(tableName, samplePost.id, partialPost);
+    });
+    expect(rendered.result.current.getData(tableName, samplePost.id)).toEqual(
+      Object.assign({}, samplePost, partialPost),
+    );
+  });
+
+  test('patch data does not exist', () => {
+    const rendered = renderHook(() => useDatabase());
+    const samplePost = generatePost();
+    const partialPost: Partial<Post> = { body: randomstring.generate() };
+    const tableName = 'hoodie';
+    createTableUtil(rendered, tableName);
+    expect(() => {
+      act(() => {
+        rendered.result.current.patchData(
+          tableName,
+          samplePost.id,
+          partialPost,
+        );
+      });
+    }).toThrowError(RowDoesNotExists);
+  });
+
+  test('patch data from table does not exist', () => {
+    const rendered = renderHook(() => useDatabase());
+    const samplePost = generatePost();
+    const partialPost: Partial<Post> = { body: randomstring.generate() };
+    const tableName = 'hoodie';
+    expect(() => {
+      act(() => {
+        rendered.result.current.patchData(
+          tableName,
+          samplePost.id,
+          partialPost,
+        );
+      });
+    }).toThrowError(TableDoesNotExists);
   });
 });
