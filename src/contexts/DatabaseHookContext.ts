@@ -12,6 +12,6 @@ export const useDatabaseHook = (): DatabaseHook => {
   return databaseStore;
 };
 
-const DatabaseHookContextProvider = DatabaseHookContext.Provider;
+const DatabaseHookProvider = DatabaseHookContext.Provider;
 
-export default DatabaseHookContextProvider;
+export default DatabaseHookProvider;
