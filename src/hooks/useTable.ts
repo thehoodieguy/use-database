@@ -1,6 +1,6 @@
 import { TableKeyType, RowUpdateArg } from './../types';
 import { TableExists } from './../exceptions';
-import { useDatabaseHook } from '../contexts/DatabaseHookContext';
+import { useDatabaseHook } from '../contexts';
 import { useEffect } from 'react';
 
 function useTable<RowType>(tableName: string): TableHook<RowType> {

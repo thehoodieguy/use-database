@@ -1,6 +1,6 @@
-import { DatabaseHook } from '../hooks/useDatabase';
+import { DatabaseHook } from './hooks/useDatabase';
 import { createContext, useContext } from 'react';
-import { DatabaseNotProvidedError } from '../exceptions';
+import { DatabaseNotProvidedError } from './exceptions';
 
 const DatabaseHookContext = createContext<DatabaseHook | null>(null);
 
