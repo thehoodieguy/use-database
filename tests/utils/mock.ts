@@ -7,13 +7,13 @@ export interface Post {
   isLiked: boolean;
 }
 
-export const generatePost = (partialPost: Partial<Post> = {}): Post =>
-  Object.assign(
-    {},
-    {
-      id: random.int(),
-      body: randomstring.generate(),
-      isLiked: random.boolean(),
-    },
-    partialPost,
-  );
+export const generatePost = (partialPost: Partial<Post> = {}): Post => ({
+  id: random.int(),
+  body: randomstring.generate(),
+  isLiked: random.boolean(),
+  ...partialPost,
+});
+
+export const generatePostList = (
+  postNum: number,
+): Post[] => [...Array(postNum).keys()].map((key) => generatePost({id: key}));

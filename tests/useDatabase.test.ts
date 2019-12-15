@@ -10,8 +10,9 @@ import {
   createTableUtil,
   getTableUtil,
   dropTableUtil,
+  createTableWithRowsUtil,
 } from './utils/databaseHook';
-import { generatePost, Post } from './utils/mock';
+import { generatePost, Post, generatePostList } from './utils/mock';
 import randomstring, { generate } from 'randomstring';
 
 test('database init', () => {
@@ -256,5 +257,135 @@ describe('delete row', () => {
     expect(() =>
       act(() => rendered.result.current.deleteRow(tableName, samplePost.id)),
     ).toThrowError(TableDoesNotExist);
+  });
+});
+
+describe('set row list', () => {
+  test('', () => {
+    const rendered = renderHook(() => useDatabase());
+    const { tableName, postList } = createTableWithRowsUtil(rendered);
+    const tableExpected = Object.fromEntries(postList.map(post => [post.id, post]));
+    expect(rendered.result.current.database).toEqual({
+      [tableName]: tableExpected,
+    })
+  });
+
+  test('with exists', () => {
+    const rendered = renderHook(() => useDatabase());
+    const tableName = randomstring.generate();
+    const postList = generatePostList(100);
+    const postListBefore = postList.slice(0, 50).map(post => generatePost({ id: post.id }));
+    act(() => rendered.result.current.createTable(tableName));
+    act(() =>
+      rendered.result.current.setRowList(
+        tableName,
+        postListBefore.map(post => ({ id: post.id, row: post })),
+      ),
+    );
+    act(() =>
+      rendered.result.current.setRowList(
+        tableName,
+        postList.map(post => ({ id: post.id, row: post })),
+      ),
+    );
+    const tableExpected = Object.fromEntries(postList.map(post => [post.id, post]));
+    expect(rendered.result.current.database).toEqual({
+      [tableName]: tableExpected,
+    })
+  });
+
+  test('with all exists', () => {
+    const rendered = renderHook(() => useDatabase());
+    const tableName = randomstring.generate();
+    const postList = generatePostList(100);
+    act(() => rendered.result.current.createTable(tableName));
+    act(() =>
+      rendered.result.current.setRowList(
+        tableName,
+        postList.map(post => ({ id: post.id, row: post })),
+      ),
+    );
+    act(() =>
+      rendered.result.current.setRowList(
+        tableName,
+        postList.map(post => ({ id: post.id, row: post })),
+      ),
+    );
+    const tableExpected = Object.fromEntries(postList.map(post => [post.id, post]));
+    expect(rendered.result.current.database).toEqual({
+      [tableName]: tableExpected,
+    })
+  });
+});
+
+describe('get row list', () => {
+  test('', () => {
+    const rendered = renderHook(() => useDatabase());
+    const { tableName, postList } = createTableWithRowsUtil(rendered);
+    expect(rendered.result.current.getRowList(tableName, postList.map(post => post.id))).toEqual(postList);
+  });
+
+  test('which do not exist', () => {
+    const rendered = renderHook(() => useDatabase());
+    const tableName = randomstring.generate();
+    act(() => rendered.result.current.createTable(tableName));
+    const postList = generatePostList(100);
+    expect(rendered.result.current.getRowList(tableName, postList.map(post => post.id))).toEqual(postList.map(() => undefined));
+  });
+
+  test('with check row', () => {
+    const rendered = renderHook(() => useDatabase());
+    const tableName = randomstring.generate();
+    act(() => rendered.result.current.createTable(tableName));
+    const postList = generatePostList(100);
+    expect(() => rendered.result.current.getRowList(tableName, postList.map(post => post.id), true)).toThrowError(RowDoesNotExist);
+  });
+});
+
+describe('delete row list', () => {
+  test('', () => {
+    const rendered = renderHook(() => useDatabase());
+    const { tableName, postList } = createTableWithRowsUtil(rendered);
+    act(() => rendered.result.current.deleteRowList(tableName, postList.map(post => post.id)))
+    expect(rendered.result.current.database).toEqual({
+      [tableName]: {}
+    });
+  });
+
+  test('which do not exist', () => {
+    const rendered = renderHook(() => useDatabase());
+    const tableName = randomstring.generate();
+    act(() => rendered.result.current.createTable(tableName));
+    const postList = generatePostList(100);
+    act(() => rendered.result.current.deleteRowList(tableName, postList.map(post => post.id)));
+    expect(rendered.result.current.database).toEqual({
+      [tableName]: {}
+    });
+  });
+
+  test('which do not exist', () => {
+    const rendered = renderHook(() => useDatabase());
+    const tableName = randomstring.generate();
+    act(() => rendered.result.current.createTable(tableName));
+    const postList = generatePostList(100);
+    expect(() => act(() => rendered.result.current.deleteRowList(tableName, postList.map(post => post.id), true))).toThrowError(RowDoesNotExist);
+  });
+});
+
+describe('patch row list', () => {
+  test('', () => {
+    const rendered = renderHook(() => useDatabase());
+    const rowNum = 100;
+    const { tableName, postList } = createTableWithRowsUtil(rendered, rowNum);
+    const partialNewPostList = postList.slice(0, 50).map(post => generatePost({ id: post.id }));
+    const tableExpected = 
+    {
+      ...Object.fromEntries(postList.map(post => [post.id, post])),
+      ...Object.fromEntries(partialNewPostList.map(post => [post.id, post]))
+    };
+    act(() => rendered.result.current.patchRowList(tableName, partialNewPostList.map(post => ({ id: post.id, row: post }))));
+    expect(rendered.result.current.database).toEqual({
+      [tableName]: tableExpected,
+    })
   });
 });
