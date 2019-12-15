@@ -134,6 +134,17 @@ describe('set row', () => {
       },
     });
   });
+
+  test('on table does not exist', () => {
+    const rendered = renderHook(() => useDatabase());
+    const tableName = 'hoodie';
+    const samplePost = generatePost();
+    expect(() =>
+      act(() => {
+        rendered.result.current.setRow(tableName, samplePost.id, samplePost);
+      }),
+    ).toThrowError(TableDoesNotExist);
+  });
 });
 
 describe('get row', () => {
@@ -210,5 +221,40 @@ describe('patch row', () => {
         rendered.result.current.patchRow(tableName, samplePost.id, partialPost);
       });
     }).toThrowError(TableDoesNotExist);
+  });
+});
+
+describe('delete row', () => {
+  test('', () => {
+    const rendered = renderHook(() => useDatabase());
+    const samplePost = generatePost();
+    const tableName = randomstring.generate();
+    act(() => rendered.result.current.createTable(tableName));
+    act(() =>
+      rendered.result.current.setRow(tableName, samplePost.id, samplePost),
+    );
+    act(() => rendered.result.current.deleteRow(tableName, samplePost.id));
+    expect(samplePost.id in rendered.result.current.database[tableName]).toBe(
+      false,
+    );
+  });
+
+  test('does not exist', () => {
+    const rendered = renderHook(() => useDatabase());
+    const samplePost = generatePost();
+    const tableName = randomstring.generate();
+    act(() => rendered.result.current.createTable(tableName));
+    expect(() =>
+      act(() => rendered.result.current.deleteRow(tableName, samplePost.id)),
+    ).toThrowError(RowDoesNotExist);
+  });
+
+  test('on table does not exist', () => {
+    const rendered = renderHook(() => useDatabase());
+    const samplePost = generatePost();
+    const tableName = randomstring.generate();
+    expect(() =>
+      act(() => rendered.result.current.deleteRow(tableName, samplePost.id)),
+    ).toThrowError(TableDoesNotExist);
   });
 });

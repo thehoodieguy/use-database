@@ -134,3 +134,27 @@ describe('patch row', () => {
     ).toThrowError(RowDoesNotExist);
   });
 });
+
+describe('delete row', () => {
+  test('', () => {
+    const { renderedDb, renderTable, tableName } = build();
+    const post = generatePost();
+    let renderedTable = renderTable(renderedDb);
+    act(() => renderedTable.result.current.setRow(post.id, post));
+    renderedTable = renderTable(renderedDb);
+    act(() => renderedTable.result.current.deleteRow(post.id));
+    renderedTable = renderTable(renderedDb);
+    expect(() => renderedTable.result.current.getRow(post.id)).toThrowError(
+      RowDoesNotExist,
+    );
+  });
+
+  test('does not exist', () => {
+    const { renderedDb, renderTable, tableName } = build();
+    const post = generatePost();
+    let renderedTable = renderTable(renderedDb);
+    expect(() =>
+      act(() => renderedTable.result.current.deleteRow(post.id)),
+    ).toThrowError(RowDoesNotExist);
+  });
+});

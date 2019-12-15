@@ -8,6 +8,7 @@ function useTable<RowType>(tableName: string): TableHook<RowType> {
     database,
     createTable,
     getRow: getRowFromDb,
+    deleteRow: deleteRowFromDb,
     setRow: setRowToDb,
     patchRow: patchRowToDb,
   } = useDatabaseHook();
@@ -20,7 +21,7 @@ function useTable<RowType>(tableName: string): TableHook<RowType> {
     }
   }, []);
 
-  const getRow = (id: TableKeyType, check = true): RowType => {
+  const getRow = (id: TableKeyType): RowType => {
     return getRowFromDb<RowType>(tableName, id);
   };
   const setRow = (id: TableKeyType, row: RowType): void => {
@@ -29,12 +30,16 @@ function useTable<RowType>(tableName: string): TableHook<RowType> {
   const patchRow = (id: TableKeyType, partialRow: Partial<RowType>): void => {
     patchRowToDb<RowType>(tableName, id, partialRow);
   };
+  const deleteRow = (id: TableKeyType): void => {
+    deleteRowFromDb(tableName, id);
+  };
 
   return {
     database,
     getRow,
     setRow,
     patchRow,
+    deleteRow,
   };
 }
 
@@ -43,6 +48,7 @@ export interface TableHook<RowType> {
   getRow: (id: TableKeyType) => RowType;
   setRow: (id: TableKeyType, row: RowType) => void;
   patchRow: (id: TableKeyType, partialRow: Partial<RowType>) => void;
+  deleteRow: (id: TableKeyType) => void;
 }
 
 export default useTable;

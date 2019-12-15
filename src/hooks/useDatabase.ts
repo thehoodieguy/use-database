@@ -3,7 +3,10 @@ import { useState } from 'react';
 import { Database } from '../types';
 import { TableExists } from './../exceptions';
 import { Table, TableKeyType } from './../types';
-import { checkTable as checkTableService, checkRow } from './utils';
+import {
+  checkTable as checkTableUtil,
+  checkRow as checkRowUtil,
+} from './utils';
 
 function useDatabase(): DatabaseHook {
   const [database, setDatabase] = useState<Database>({});
@@ -16,7 +19,11 @@ function useDatabase(): DatabaseHook {
   };
 
   const checkTable = (tableName: string) => {
-    checkTableService(database, tableName);
+    checkTableUtil(database, tableName);
+  };
+
+  const checkRow = (tableName: string, id: TableKeyType) => {
+    checkRowUtil(database[tableName], id);
   };
 
   const getTable = <RowType>(
@@ -40,6 +47,7 @@ function useDatabase(): DatabaseHook {
     id: TableKeyType,
     data: RowType,
   ): void => {
+    checkTable(tableName);
     setDatabase({
       ...database,
       [tableName]: {
@@ -55,7 +63,7 @@ function useDatabase(): DatabaseHook {
     check = true,
   ): RowType => {
     checkTable(tableName);
-    checkRow(database[tableName], id);
+    checkRow(tableName, id);
     return database[tableName][id];
   };
 
@@ -64,7 +72,8 @@ function useDatabase(): DatabaseHook {
     id: TableKeyType,
     partialData: Partial<RowType>,
   ): void => {
-    checkRow(getTable(tableName), id);
+    checkTable(tableName);
+    checkRow(tableName, id);
     setDatabase({
       ...database,
       [tableName]: {
@@ -77,6 +86,16 @@ function useDatabase(): DatabaseHook {
     });
   };
 
+  const deleteRow = (tableName: string, id: TableKeyType): void => {
+    checkTable(tableName);
+    checkRow(tableName, id);
+    const { [id]: omit, ...newTable } = database[tableName];
+    setDatabase({
+      ...database,
+      [tableName]: newTable,
+    });
+  };
+
   return {
     database,
     checkTable,
@@ -86,6 +105,7 @@ function useDatabase(): DatabaseHook {
     setRow,
     getRow,
     patchRow,
+    deleteRow,
   };
 }
 
@@ -102,6 +122,7 @@ export interface DatabaseHook {
     partialData: Partial<RowType>,
   ) => void;
   getRow: <RowType>(tableName: string, id: TableKeyType) => RowType;
+  deleteRow: (tableName: string, id: TableKeyType) => void;
 }
 
 export default useDatabase;
