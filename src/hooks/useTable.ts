@@ -1,14 +1,15 @@
-import { TableKeyType } from './../types';
+import { TableKeyType, Database } from './../types';
 import { TableExists } from './../exceptions';
-import { useDatabaseHook } from './../contexts/DatabaseContext';
+import { useDatabaseHook } from '../contexts/DatabaseHookContext';
 import { useEffect } from 'react';
 
-function useTable<RowType>({ tableName }: TableProps): TableHook<RowType> {
+function useTable<RowType>(tableName: string): TableHook<RowType> {
   const {
+    database,
     createTable,
-    getData: getDataFromDatabase,
-    setData: setDataToDb,
-    updateData: updateDataToDb,
+    getRow: getRowFromDb,
+    setRow: setRowToDb,
+    patchRow: patchRowToDb,
   } = useDatabaseHook();
 
   useEffect(() => {
@@ -19,34 +20,29 @@ function useTable<RowType>({ tableName }: TableProps): TableHook<RowType> {
     }
   }, []);
 
-  const getData = (id: string | number): RowType => {
-    return getDataFromDatabase<RowType>(tableName, id);
+  const getRow = (id: TableKeyType, check = true): RowType => {
+    return getRowFromDb<RowType>(tableName, id);
   };
-  const setData = (id: string | number, data: RowType): void => {
-    setDataToDb<RowType>(tableName, id, data);
+  const setRow = (id: TableKeyType, row: RowType): void => {
+    setRowToDb<RowType>(tableName, id, row);
   };
-  const updateData = (
-    id: TableKeyType,
-    partialData: Partial<RowType>,
-  ): void => {
-    updateDataToDb<RowType>(tableName, id, partialData);
+  const patchRow = (id: TableKeyType, partialRow: Partial<RowType>): void => {
+    patchRowToDb<RowType>(tableName, id, partialRow);
   };
 
   return {
-    getData,
-    setData,
-    updateData,
+    database,
+    getRow,
+    setRow,
+    patchRow,
   };
 }
 
-export interface TableProps {
-  tableName: string;
-}
-
 export interface TableHook<RowType> {
-  getData: (id: TableKeyType) => RowType;
-  setData: (id: TableKeyType, data: RowType) => void;
-  updateData: (id: TableKeyType, partialData: Partial<RowType>) => void;
+  database: Database;
+  getRow: (id: TableKeyType) => RowType;
+  setRow: (id: TableKeyType, row: RowType) => void;
+  patchRow: (id: TableKeyType, partialRow: Partial<RowType>) => void;
 }
 
 export default useTable;
