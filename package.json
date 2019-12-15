@@ -1,8 +1,7 @@
 {
   "name": "react-normalizer-hook",
-  "version": "0.0.1",
+  "version": "0.0.4",
   "description": "Building normalized database using react hook.",
-  "main": "index.js",
   "repository": "https://github.com/thehoodieguy/react-normalizer-hook",
   "author": "thehoodieguy",
   "license": "MIT",
@@ -11,6 +10,8 @@
     "react": "^16.12.0",
     "typescript": "^3.7.3"
   },
+  "main": "./dist/index.js",
+  "types": "./dist/main.d.ts",
   "devDependencies": {
     "@testing-library/react-hooks": "^3.2.1",
     "@types/jest": "^24.0.23",
@@ -22,7 +23,9 @@
     "eslint-config-prettier": "^6.7.0",
     "eslint-plugin-prettier": "^3.1.1",
     "eslint-plugin-react": "^7.17.0",
+    "install": "^0.13.0",
     "jest": "^24.9.0",
+    "npm": "^6.13.4",
     "prettier": "^1.19.1",
     "random": "^2.1.1",
     "randomstring": "^1.1.5",
@@ -30,6 +33,7 @@
     "ts-jest": "^24.2.0"
   },
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "build": "tsc"
   }
 }

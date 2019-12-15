@@ -1,9 +1,24 @@
 {
   "compilerOptions": {
-    "target": "es2019",
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
+    "target": "es6",
+    "module": "commonjs",
     "moduleResolution": "node",
-    "jsx": "react"
-  }
+    "jsx": "react",
+    "declaration": true,
+    "pretty": true,
+    "rootDir": "src",
+    "sourceMap": false,
+    "strict": true,
+    "esModuleInterop": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noImplicitAny": false,
+    "noFallthroughCasesInSwitch": true,
+    "outDir": "dist",
+    "lib": ["es2018", "dom", "es2019"],
+    "importHelpers": true,
+    "downlevelIteration": true
+  },
+  "exclude": ["node_modules", "example", "tests"]
 }
