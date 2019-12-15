@@ -1,25 +1,24 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { DatabaseHookProvider, useDatabase } from 'react-normalizer-hook/dist';
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import ListPage from './pages/ListPage';
+import DetailPage from './pages/DetailPage';
 
 const App: React.FC = () => {
+  const databaseHook = useDatabase();
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <DatabaseHookProvider value={databaseHook}>
+      <Router>
+        <Switch>
+          <Route exact path="/:id">
+            <DetailPage />
+          </Route>
+          <Route path="/">
+            <ListPage />
+          </Route>
+        </Switch>
+      </Router>
+    </DatabaseHookProvider>
   );
 };
 
