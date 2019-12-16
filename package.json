@@ -1,6 +1,6 @@
 {
   "name": "react-normalizer-hook",
-  "version": "0.0.5",
+  "version": "0.0.6-alpha",
   "description": "Building normalized database using react hook.",
   "repository": "https://github.com/thehoodieguy/react-normalizer-hook",
   "author": "thehoodieguy",

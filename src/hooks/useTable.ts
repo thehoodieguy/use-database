@@ -13,8 +13,7 @@ function useTable<RowType>(tableName: string): TableHook<RowType> {
     patchRowList: patchRowListToDb,
   } = useDatabaseHook();
 
-  const getRow = (id: TableKeyType): RowType =>
-    getRowFromDb<RowType>(tableName, id);
+  const getRow = (id: TableKeyType) => getRowFromDb<RowType>(tableName, id);
   const setRow = (id: TableKeyType, row: RowType) =>
     setRowToDb<RowType>(tableName, id, row);
   const patchRow = (id: TableKeyType, partialRow: Partial<RowType>) =>
@@ -42,14 +41,14 @@ function useTable<RowType>(tableName: string): TableHook<RowType> {
 }
 
 export interface TableHook<RowType> {
-  getRow: (id: TableKeyType) => RowType;
-  setRow: (id: TableKeyType, row: RowType) => void;
-  patchRow: (id: TableKeyType, partialRow: Partial<RowType>) => void;
+  getRow: (id: TableKeyType) => RowType | undefined;
+  setRow: (id: TableKeyType, row: RowType) => TableKeyType;
+  patchRow: (id: TableKeyType, partialRow: Partial<RowType>) => TableKeyType;
   deleteRow: (id: TableKeyType) => void;
-  getRowList: (idList: TableKeyType[]) => RowType[];
+  getRowList: (idList: TableKeyType[]) => (RowType | undefined)[];
   deleteRowList: (idList: TableKeyType[]) => void;
-  setRowList: (rowListToUpdate: RowUpdateArg<RowType>[]) => void;
-  patchRowList: (rowListToPatch: RowUpdateArg<RowType>[]) => void;
+  setRowList: (rowListToUpdate: RowUpdateArg<RowType>[]) => TableKeyType[];
+  patchRowList: (rowListToPatch: RowUpdateArg<RowType>[]) => TableKeyType[];
 }
 
 export default useTable;

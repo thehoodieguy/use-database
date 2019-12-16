@@ -4,16 +4,6 @@ import randomstring from 'randomstring';
 import { DatabaseHook } from '../../src/hooks/useDatabase';
 import { generatePostList } from './mock';
 
-export const dropTableUtil = (
-  rendered: RenderHookResult<void, DatabaseHook>,
-  tableName: string,
-): void => {
-  const { dropTable } = rendered.result.current;
-  act(() => {
-    dropTable(tableName);
-  });
-};
-
 export const getTableUtil = <RowType>(
   rendered: RenderHookResult<void, DatabaseHook>,
   tableName: string,
@@ -28,11 +18,11 @@ export const setTableWithRowsUtil = (
 ) => {
   const tableName = randomstring.generate();
   const postList = generatePostList(rowNum);
-  act(() =>
+  act(() => {
     rendered.result.current.setRowList(
       tableName,
       postList.map(post => ({ id: post.id, row: post })),
-    ),
-  );
+    );
+  });
   return { tableName, postList };
 };

@@ -46,7 +46,10 @@ describe('get row', () => {
     const { renderedDb, renderTable } = build();
     const samplePost = generatePost();
     const renderedTable = renderTable(renderedDb);
-    expect(() => renderedTable.result.current.getRow(samplePost.id)).toThrow();
+    act(() => {
+      renderedTable.result.current.getRow(samplePost.id);
+    });
+    expect(renderedDb.result.current.database).toEqual({});
   });
 });
 
@@ -67,9 +70,9 @@ describe('set row', () => {
   test('already exists', () => {
     const { renderedDb, renderTable, tableName } = build();
     const samplePost = generatePost();
-    act(() =>
-      renderedDb.result.current.setRow(tableName, samplePost.id, samplePost),
-    );
+    act(() => {
+      renderedDb.result.current.setRow(tableName, samplePost.id, samplePost);
+    });
     const postAfter = {
       ...generatePost(),
       id: samplePost.id,
@@ -90,9 +93,9 @@ describe('patch row', () => {
     const { renderedDb, renderTable, tableName } = build();
     const postBefore = generatePost();
     const postAfter: Partial<Post> = { body: generatePost().body };
-    act(() =>
-      renderedDb.result.current.setRow(tableName, postBefore.id, postBefore),
-    );
+    act(() => {
+      renderedDb.result.current.setRow(tableName, postBefore.id, postBefore);
+    });
     const renderedTable = renderTable(renderedDb);
     act(() => {
       renderedTable.result.current.patchRow(postBefore.id, postAfter);
@@ -117,9 +120,13 @@ describe('delete row', () => {
     const { renderedDb, renderTable } = build();
     const post = generatePost();
     let renderedTable = renderTable(renderedDb);
-    act(() => renderedTable.result.current.setRow(post.id, post));
+    act(() => {
+      renderedTable.result.current.setRow(post.id, post);
+    });
     renderedTable = renderTable(renderedDb);
-    act(() => renderedTable.result.current.deleteRow(post.id));
+    act(() => {
+      renderedTable.result.current.deleteRow(post.id);
+    });
     renderedTable = renderTable(renderedDb);
     expect(renderedTable.result.current.getRow(post.id)).toBeFalsy();
   });
@@ -128,8 +135,8 @@ describe('delete row', () => {
     const { renderedDb, renderTable } = build();
     const post = generatePost();
     const renderedTable = renderTable(renderedDb);
-    expect(() =>
-      act(() => renderedTable.result.current.deleteRow(post.id)),
-    ).toThrow();
+    act(() => {
+      renderedTable.result.current.deleteRow(post.id);
+    });
   });
 });
