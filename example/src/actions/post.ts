@@ -1,14 +1,20 @@
-import { apiEndpoints } from './../consts';
 import { Post } from '../domain/post';
-import axios from 'axios';
+import faker from 'faker';
+
+const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+const generatePost = (id?: number): Post => ({
+  id: id != null ? id : faker.random.number(),
+  name: faker.name.findName(),
+  createdAt: faker.date.past().toString(),
+  avatar: faker.image.avatar(),
+  isLiked: faker.random.boolean(),
+});
+
+const generatePostList = (num: number): Post[] =>
+  [...Array(num).keys()].map(key => generatePost(key));
 
 export const listPosts = async (): Promise<Post[]> => {
-  const res = await axios.get<Post[]>(apiEndpoints.list);
-  const data = res.data;
-  return data;
-};
-
-export const detailPost = async (id: string): Promise<Post> => {
-  const res = await axios.get<Post>(apiEndpoints.detail(id));
-  return res.data;
+  await sleep(200);
+  return generatePostList(faker.random.number(200));
 };

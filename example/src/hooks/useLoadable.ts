@@ -1,42 +1,50 @@
-import { useState } from 'react';
-import { useTable } from 'react-normalizer-hook/dist';
-import { TABLE_NAME, Post } from '../domain/post';
+import { useState, useCallback } from 'react';
 
-function useLoadablePostList({
+export interface Loadable<T> {
+  isLoading: boolean;
+  error: Error | null;
+  data: T | null;
+}
+
+function useLoadable<T>({
   defaultIsLoading = false,
   defaultError = null,
-}: UseLoadableProps = {}) {
-  const { getRowList, setRowList } = useTable<Post>(TABLE_NAME);
-  const [isLoading, setIsLoading] = useState(defaultIsLoading);
-  const [error, setError] = useState(defaultError);
-  const [idList, setIdList] = useState<string[]>([]);
+  defaultData = null,
+}: UseLoadableProps<T> = {}) {
+  const [loadable, setLoadable] = useState<Loadable<T>>({
+    isLoading: defaultIsLoading,
+    error: defaultError,
+    data: defaultData,
+  });
 
-  const loadData = async (loader: () => Promise<Post[]>) => {
-    setIsLoading(true);
+  const loadData = useCallback(async (loader: () => Promise<T>) => {
+    setLoadable(loadable => ({ ...loadable, isLoading: true }));
     try {
-      const postList = await loader();
-      await setRowList(postList.map(post => ({ id: post.id, row: post })));
-      setIdList(postList.map(post => post.id));
-      setError(null);
-    } catch (e) {
-      setError(e);
+      const data = await loader();
+      setLoadable({
+        error: null,
+        isLoading: false,
+        data,
+      });
+    } catch (error) {
+      setLoadable({
+        error,
+        isLoading: false,
+        data: null,
+      });
     }
-    setIsLoading(false);
-  };
-
-  const data = idList.length > 0 ? getRowList(idList) : [];
+  }, []);
 
   return {
-    isLoading,
-    error,
-    data,
+    ...loadable,
     loadData,
   };
 }
 
-export interface UseLoadableProps {
+export interface UseLoadableProps<T> {
   defaultIsLoading?: boolean;
   defaultError?: Error | null;
+  defaultData?: T | null;
 }
 
-export default useLoadablePostList;
+export default useLoadable;
