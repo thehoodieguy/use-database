@@ -1,7 +1,7 @@
 import { act, renderHook } from '@testing-library/react-hooks';
 
 import useDatabase from '../src/hooks/useDatabase';
-import { getTableUtil, setTableWithRowsUtil } from './utils/databaseHook';
+import { setTableWithRowsUtil } from './utils/databaseHook';
 import { generatePost, Post, generatePostList } from './utils/mock';
 import randomstring from 'randomstring';
 
@@ -9,19 +9,6 @@ test('database init', () => {
   const rendered = renderHook(() => useDatabase());
   const { database } = rendered.result.current;
   expect(database).toEqual({});
-});
-
-describe('get table', () => {
-  test('', () => {
-    const rendered = renderHook(() => useDatabase());
-    const tableName = 'hoodie';
-    act(() => {
-      getTableUtil(rendered, tableName);
-    });
-    expect(rendered.result.current.database).toEqual({
-      [tableName]: {},
-    });
-  });
 });
 
 describe('set row', () => {
@@ -64,6 +51,17 @@ describe('set row', () => {
       rendered.result.current.setRow(tableName, samplePost.id, samplePost);
     });
   });
+
+  test('func do not rerender', () => {
+    const rendered = renderHook(() => useDatabase());
+    const prevSetRow = rendered.result.current.setRow;
+    const tableName = randomstring.generate();
+    const post = generatePost();
+    act(() => {
+      prevSetRow(tableName, post.id, post);
+    });
+    expect(rendered.result.current.setRow === prevSetRow).toBeTruthy();
+  });
 });
 
 describe('get row', () => {
@@ -97,6 +95,17 @@ describe('get row', () => {
       rendered.result.current.getRow(tableName, samplePost.id);
     });
     expect(rendered.result.current.database).toEqual({});
+  });
+
+  test('func rerender', () => {
+    const rendered = renderHook(() => useDatabase());
+    const tableName = 'hoodie';
+    const samplePost = generatePost();
+    const prevGetRow = rendered.result.current.getRow;
+    act(() => {
+      rendered.result.current.setRow(tableName, samplePost.id, samplePost);
+    });
+    expect(prevGetRow === rendered.result.current.getRow).toBeFalsy();
   });
 });
 
@@ -141,6 +150,18 @@ describe('patch row', () => {
       },
     });
   });
+
+  test('func does not rerender', () => {
+    const rendered = renderHook(() => useDatabase());
+    const samplePost = generatePost();
+    const partialPost: Partial<Post> = { body: randomstring.generate() };
+    const tableName = 'hoodie';
+    const prevPatchRow = rendered.result.current.patchRow;
+    act(() => {
+      rendered.result.current.patchRow(tableName, samplePost.id, partialPost);
+    });
+    expect(prevPatchRow === rendered.result.current.patchRow).toBeTruthy();
+  });
 });
 
 describe('delete row', () => {
@@ -175,6 +196,20 @@ describe('delete row', () => {
     act(() => {
       rendered.result.current.deleteRow(tableName, samplePost.id);
     });
+  });
+
+  test('func does not rerender', () => {
+    const rendered = renderHook(() => useDatabase());
+    const samplePost = generatePost();
+    const tableName = randomstring.generate();
+    const prevDeleteRow = rendered.result.current.deleteRow;
+    act(() => {
+      rendered.result.current.setRow(tableName, samplePost.id, samplePost);
+    });
+    act(() => {
+      rendered.result.current.deleteRow(tableName, samplePost.id);
+    });
+    expect(rendered.result.current.deleteRow === prevDeleteRow).toBeTruthy();
   });
 });
 
@@ -243,6 +278,13 @@ describe('set row list', () => {
       [tableName]: tableExpected,
     });
   });
+
+  test('func does not rerender', () => {
+    const rendered = renderHook(() => useDatabase());
+    const prevSetRowList = rendered.result.current.setRowList;
+    setTableWithRowsUtil(rendered);
+    expect(prevSetRowList === rendered.result.current.setRowList);
+  });
 });
 
 describe('get row list', () => {
@@ -269,6 +311,13 @@ describe('get row list', () => {
         ),
       ).toEqual(postList.map(() => undefined));
     });
+  });
+
+  test('func rerender', () => {
+    const rendered = renderHook(() => useDatabase());
+    const prevGetRowList = rendered.result.current.getRowList;
+    setTableWithRowsUtil(rendered);
+    expect(prevGetRowList === rendered.result.current.getRowList).toBeFalsy();
   });
 });
 
@@ -298,6 +347,19 @@ describe('delete row list', () => {
       );
     });
   });
+
+  test('func does not rerender', () => {
+    const rendered = renderHook(() => useDatabase());
+    const prevDeleteRowList = rendered.result.current.deleteRowList;
+    const { tableName, postList } = setTableWithRowsUtil(rendered);
+    act(() => {
+      rendered.result.current.deleteRowList(
+        tableName,
+        postList.map(post => post.id),
+      );
+    });
+    expect(prevDeleteRowList).toBe(rendered.result.current.deleteRowList);
+  });
 });
 
 describe('patch row list', () => {
@@ -324,5 +386,22 @@ describe('patch row list', () => {
     expect(rendered.result.current.database).toEqual({
       [tableName]: tableExpected,
     });
+  });
+
+  test('func does not rerender', () => {
+    const rendered = renderHook(() => useDatabase());
+    const prevFunc = rendered.result.current.patchRowList;
+    const rowNum = 100;
+    const { tableName, postList } = setTableWithRowsUtil(rendered, rowNum);
+    const partialNewPostList = postList
+      .slice(0, 50)
+      .map(post => generatePost({ id: post.id }));
+    act(() => {
+      rendered.result.current.patchRowList(
+        tableName,
+        partialNewPostList.map(post => ({ id: post.id, row: post })),
+      );
+    });
+    expect(prevFunc === rendered.result.current.patchRowList);
   });
 });

@@ -9,19 +9,13 @@ import useTable from '../src/hooks/useTable';
 import { Post, generatePost } from './utils/mock';
 import randomstring from 'randomstring';
 
-const build = (mountOnce = true) => {
+const build = () => {
   const renderedDb = renderHook(() => useDatabase());
   const tableName = randomstring.generate();
   const renderTable = (renderedDb: RenderHookResult<void, DatabaseHook>) =>
     renderHook(() => useTable<Post>(tableName), {
       wrapper: makeWrapper(renderedDb.result.current),
     });
-  if (mountOnce) {
-    // mount once to trigger useMount hook (will init table)
-    act(() => {
-      renderTable(renderedDb);
-    });
-  }
   return {
     renderedDb,
     renderTable,
@@ -57,12 +51,12 @@ describe('set row', () => {
   test('', () => {
     const { renderedDb, renderTable } = build();
     const samplePost = generatePost();
-    let renderedTable = renderTable(renderedDb);
+    const rendered = renderTable(renderedDb);
     act(() => {
-      renderedTable.result.current.setRow(samplePost.id, samplePost);
+      rendered.result.current.setRow(samplePost.id, samplePost);
     });
-    renderedTable = renderTable(renderedDb);
-    expect(renderedTable.result.current.getRow(samplePost.id)).toEqual(
+    const newRendered = renderTable(renderedDb);
+    expect(newRendered.result.current.getRow(samplePost.id)).toEqual(
       samplePost,
     );
   });
