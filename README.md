@@ -16,7 +16,7 @@ yarn add use-database
 
 On root component where you want to share your database, (Mostly on App.tsx)
 
-```typescriptreact
+```tsx
 const App: React.FC = () => {
   const databaseHook = useDatabase();
   return (
@@ -29,7 +29,7 @@ const App: React.FC = () => {
 
 And use `useTable` for set or get resource from database.
 
-```typescriptreact
+```tsx
 const POST_TABLE = 'POST'
 
 interface Post {
