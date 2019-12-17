@@ -1,5 +1,5 @@
 import React from 'react';
-import { DatabaseHookProvider, useDatabase } from 'react-normalizer-hook/dist';
+import { DatabaseHookProvider, useDatabase } from 'use-database/dist';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import ListPage from './pages/ListPage';
 import DetailPage from './pages/DetailPage';

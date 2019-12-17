@@ -1,9 +1,9 @@
 import { TABLE_NAME } from './../domain/post';
-import { useTable } from 'react-normalizer-hook/dist';
+import { useTable } from 'use-database/dist';
 import { useState, useMemo, useEffect } from 'react';
 import { Post } from '../domain/post';
 import { listPosts } from '../actions/post';
-import { TableKeyType } from 'react-normalizer-hook/dist/types';
+import { TableKeyType } from 'use-database/dist/types';
 
 export interface Loadable<T> {
   isLoading: boolean;

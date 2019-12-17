@@ -8400,14 +8400,6 @@ react-is@^16.6.0, react-is@^16.7.0, react-is@^16.8.1, react-is@^16.8.4:
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.12.0.tgz#2cc0fe0fba742d97fd527c42a13bec4eeb06241c"
   integrity sha512-rPCkf/mWBtKc97aLL9/txD8DZdemK0vkA3JMLShjlJB3Pj3s+lpf1KaBzMfQrAmhMQB0n1cU/SUGgKKBCe837Q==
 
-react-normalizer-hook@0.0.8:
-  version "0.0.8"
-  resolved "https://registry.yarnpkg.com/react-normalizer-hook/-/react-normalizer-hook-0.0.8.tgz#4136661ac1121bf6722e30e6aadca7da92dbfe0b"
-  integrity sha512-194CCOc4mLpVCSVPQVilNJ0FkfYjRNXRHxbaMnGsSsqqCHnoC0AKYwavhGqPCOs7XmbyrfYt9t2fJ5uHn7x5fQ==
-  dependencies:
-    react "^16.12.0"
-    typescript "^3.7.3"
-
 react-router-dom@^5.1.2:
   version "5.1.2"
   resolved "https://registry.yarnpkg.com/react-router-dom/-/react-router-dom-5.1.2.tgz#06701b834352f44d37fbb6311f870f84c76b9c18"
@@ -10075,6 +10067,14 @@ url@^0.11.0:
   dependencies:
     punycode "1.3.2"
     querystring "0.2.0"
+
+use-database@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/use-database/-/use-database-1.0.0.tgz#30d9609b4afd5ce41302f638ae4e13f88f78da94"
+  integrity sha512-d9CmnLqq8LZIQvLD8mP5Ggm3Ii7Wi7/BSPuQQB6N1FzdeaINxMaRUqvts7oeTWXmAy5ci1aH3WCzHP1SAHk2tg==
+  dependencies:
+    react "^16.12.0"
+    typescript "^3.7.3"
 
 use@^3.1.0:
   version "3.1.1"

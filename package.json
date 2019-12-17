@@ -1,8 +1,8 @@
 {
-  "name": "react-normalizer-hook",
-  "version": "0.0.8",
-  "description": "Building normalized database using react hook.",
-  "repository": "https://github.com/thehoodieguy/react-normalizer-hook",
+  "name": "use-database",
+  "version": "1.0.0",
+  "description": "A react hook to build sql-like database on react context.",
+  "repository": "https://github.com/thehoodieguy/use-database",
   "author": "thehoodieguy",
   "license": "MIT",
   "private": false,

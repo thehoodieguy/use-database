@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { useParams } from 'react-router-dom';
-import { useTable } from 'react-normalizer-hook/dist';
+import { useTable } from 'use-database';
 import { TABLE_NAME, Post } from '../domain/post';
 
 export default function DetailPage() {
