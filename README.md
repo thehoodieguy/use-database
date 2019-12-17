@@ -4,11 +4,11 @@ A react hook to build sql-like database on react context.
 
 ## Install
 
-```
+```shell
 npm install use-database
 ```
 
-```
+```shell
 yarn add use-database
 ```
 
@@ -46,7 +46,7 @@ function BrilliantComponent() {
 }
 ```
 
-Go `examples` folder to check more.
+Go [examples/src](https://github.com/thehoodieguy/use-database/tree/master/example/src) folder to check more.
 
 ## Motivation
 
@@ -67,12 +67,12 @@ You don't even have to use flux library like redux or mobx to share resource, us
 
 ## For developers want to improve this library
 
-```
+```shell
 yarn install
 yarn test --watch
 ```
 
-And feel free to reach me by a pull request!
+And feel free to reach me by an issue or a pull request!
 
 Thank you.
 
