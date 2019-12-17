@@ -1,6 +1,6 @@
 {
   "name": "use-database",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A react hook to build sql-like database on react context.",
   "repository": "https://github.com/thehoodieguy/use-database",
   "author": "thehoodieguy",
